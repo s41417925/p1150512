@@ -13,7 +13,10 @@ import com.example.p1150512.dto.request.DepositReq;
 import com.example.p1150512.dto.request.UpdatePasswordReq;
 import com.example.p1150512.entity.Atm;
 import com.example.p1150512.service.AtmService;
+import com.example.p1150512.service.AtmService1;
 import com.example.p1150512.service.PersonInfoService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/atm")
@@ -44,7 +47,7 @@ public class AtmController {
 	}
 	// 2. 修改密碼 (帶入 JSON)
 	@PostMapping("/update-password")
-	public ResponseEntity<String> updatePassword(@RequestBody UpdatePasswordReq req) {
+	public ResponseEntity<String> updatePassword(@Valid @RequestBody UpdatePasswordReq req) {
 		try {
 		 atmService.updatePasswordByAccount(req.getAccount(), req.getOldPassword(), req.getNewPassword());
 		 return ResponseEntity.ok("密碼修改成功");
