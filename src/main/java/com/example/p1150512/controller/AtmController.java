@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.p1150512.dto.request.AtmAddReq;
+import com.example.p1150512.dto.request.AtmTransactionReq;
 import com.example.p1150512.dto.request.DepositReq;
 import com.example.p1150512.dto.request.UpdatePasswordReq;
 import com.example.p1150512.entity.Atm;
@@ -23,24 +25,21 @@ import jakarta.validation.Valid;
 public class AtmController {
 	@Autowired
 	private AtmService atmService;
+	/* 在參數前加上 @Valid，才會讓 AtmAddReq 裡面的 Validation 生效*/
 	@PostMapping("/add-info")
-	public ResponseEntity<String> addInfo(@RequestBody Atm atm) {
+	public ResponseEntity<String> addInfo(@Valid @RequestBody AtmAddReq req) {
 		try {
-			atmService.addInfo(
-					atm.getAccount(),
-					atm.getPassword()
-				 );
-			return ResponseEntity.ok("註冊成功");
+			return atmService.addInfo(req);
 		} catch (Exception e) {
 			// 捕捉 Service 丟出的 RuntimeException (回滾異常)
-			return ResponseEntity.badRequest().body(e.getMessage());
+			return ResponseEntity.status(500).body(e.getMessage());
 		}
 	}
 	// 1. 查詢餘額 (帶入 JSON)
 	@PostMapping("/get-balance")
-	public ResponseEntity<?> getBalance(@RequestBody DepositReq req) {
+	public ResponseEntity<?> getBalance(@Valid @RequestBody AtmTransactionReq req) {
 		try {
-			return atmService.getBalanceByAccount(req.getAccount(), req.getPassword());
+			return atmService.getBalanceByAccount(req);
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body(e.getMessage());
 		}
@@ -49,32 +48,27 @@ public class AtmController {
 	@PostMapping("/update-password")
 	public ResponseEntity<String> updatePassword(@Valid @RequestBody UpdatePasswordReq req) {
 		try {
-		 atmService.updatePasswordByAccount(req.getAccount(), req.getOldPassword(), req.getNewPassword());
-		 return ResponseEntity.ok("密碼修改成功");
+			return atmService.updatePasswordByAccount(req);
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body(e.getMessage());
 		}
 	}
 	// 3. 存款 (帶入 JSON)
 	@PostMapping("/deposit")
-	public ResponseEntity<String> deposit(@RequestBody DepositReq req) {
+	public ResponseEntity<String> deposit(@Valid @RequestBody AtmTransactionReq req) {
 		try {
-			int newBalance = atmService.deposit(req.getAccount(), req.getPassword(), req.getAmount());
-			return ResponseEntity.ok("存款成功，目前餘額: " + newBalance);
+			return atmService.deposit(req);
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body(e.getMessage());
 		}
 	}
 	// 4. 提款 (帶入 JSON)
 	@PostMapping("/withdraw")
-	public ResponseEntity<String> withdraw(@RequestBody DepositReq req) {
+	public ResponseEntity<String> withdraw(@Valid @RequestBody AtmTransactionReq req) {
 		try {
-			int newBalance = atmService.deposit(req.getAccount(), req.getPassword(), req.getAmount());
-			return ResponseEntity.ok("提款成功，目前餘額: " + newBalance);
+			return atmService.withdraw(req);
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body(e.getMessage());
 		}
 	}
 }
-
-

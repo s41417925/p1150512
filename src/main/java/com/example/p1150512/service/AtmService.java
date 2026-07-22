@@ -8,6 +8,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.p1150512.constants.ReplyMsg;
+import com.example.p1150512.dao.AtmRepository;
 import com.example.p1150512.dto.request.AtmAddReq;
 import com.example.p1150512.dto.request.AtmTransactionReq;
 import com.example.p1150512.dto.request.UpdatePasswordReq;
@@ -19,7 +21,7 @@ public class AtmService {
 	// 密碼加密器
 	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 	@Autowired
-	private AtmDao atmDao;
+	private AtmRepository atmDao;
 
 	@Transactional(rollbackFor = Exception.class)
 	public ResponseEntity<String> addInfo(AtmAddReq req) {
@@ -183,4 +185,3 @@ public class AtmService {
 }
 
 
-}
